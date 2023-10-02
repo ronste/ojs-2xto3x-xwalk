@@ -119,6 +119,9 @@
         <id type="internal" advice="ignore">
           <xsl:value-of select="format-number(count(preceding::file)+1,'0')" />
         </id>
+        <id type="doi" advice="update">
+          <xsl:value-of select="id[@type='doi']"/>
+        </id>
         <xsl:apply-templates select="title"/>
         <xsl:apply-templates select="abstract"/>
         <xsl:apply-templates select="permissions"/>
