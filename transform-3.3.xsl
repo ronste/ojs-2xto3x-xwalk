@@ -258,14 +258,14 @@
   </xsl:template>
 
   <xsl:template match="embed">
-    <xsl:attribute name="extension"><xsl:value-of select="@mime_type" /></xsl:attribute>
+    <xsl:attribute name="extension"><xsl:value-of select="substring-after(@filename, '.')" /></xsl:attribute>
     <embed encoding="{@encoding}">
       <xsl:apply-templates select="node()" mode="copy" />
     </embed>
   </xsl:template>
 
   <xsl:template match="href">
-    <xsl:attribute name="extension"><xsl:value-of select="@mime_type" /></xsl:attribute>
+    <xsl:attribute name="extension"><xsl:value-of select="substring-after(@filename, '.')" /></xsl:attribute>
     <xsl:attribute name="filename">
       <xsl:call-template name="parseFilename">
         <xsl:with-param name="fn" select="@src" />
