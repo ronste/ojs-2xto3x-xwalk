@@ -50,7 +50,7 @@ function transform($source, $target = null) {
 	global $opts;
 	global $xsl;
 	$xmldoc = new DOMDocument();
-	$xmldoc->load($source);
+	$xmldoc->load($source, LIBXML_PARSEHUGE);
 	if (key_exists('article-defaults', $opts)) {
 		$defaults = file_get_contents($opts['article-defaults']);
 		foreach (explode("\n", $defaults) as $default) {
