@@ -9,7 +9,7 @@
   <xsl:param name="volume" />
   <xsl:param name="number" />
   <xsl:param name="year" />
-
+  
   <xsl:template match="/">
     <xsl:apply-templates />
   </xsl:template>
@@ -91,6 +91,7 @@
         </xsl:attribute>
       </xsl:if>
       <xsl:apply-templates select="galley"/>
+      <xsl:apply-templates select="supplemental_file"/>
       <publication status="3" access_status="0" >
         <xsl:choose>
           <xsl:when test="string-length(date_published)">
@@ -119,9 +120,10 @@
         <id type="internal" advice="ignore">
           <xsl:value-of select="format-number(count(preceding::file)+1,'0')" />
         </id>
-        <id type="doi" advice="update">
+<!--        <id type="doi" advice="update">
           <xsl:value-of select="id[@type='doi']"/>
-        </id>
+        </id>-->
+        <xsl:apply-templates select="id[@type='doi']"/>
         <xsl:apply-templates select="title"/>
         <xsl:apply-templates select="abstract"/>
         <xsl:apply-templates select="permissions"/>
@@ -131,11 +133,26 @@
             <xsl:apply-templates select="author" />
           </authors>
         </xsl:if>
-        <article_galley>
-          <name locale="en_US">PDF</name>
-          <seq>0</seq>
-          <submission_file_ref id="{format-number(count(preceding::file)+1,'0')}"/>
-        </article_galley>
+        <xsl:for-each select="galley">
+          <article_galley>
+            <xsl:apply-templates select="id[@type='doi']"/>
+            <name locale="{@locale}">
+              <xsl:value-of select="label/text()"/>
+            </name>
+            <seq>0</seq>
+            <submission_file_ref id="{format-number(count(preceding::file)+1,'0')}"/>
+          </article_galley>
+        </xsl:for-each>
+        <xsl:for-each select="supplemental_file">
+          <article_galley>
+            <xsl:apply-templates select="id[@type='doi']"/>
+            <name locale="en_US">
+              <xsl:value-of select="'Supplementary'"/>
+            </name>
+            <seq>0</seq>
+            <submission_file_ref id="{format-number(count(preceding::file)+1,'0')}"/>
+          </article_galley>
+        </xsl:for-each>
       </publication>
       <xsl:if test="not(ancestor::issue) and string-length($volume) and string-length($number) and string-length($year)">
         <issue_identification>
@@ -145,6 +162,12 @@
         </issue_identification>
       </xsl:if>
     </article>
+  </xsl:template>
+  
+  <xsl:template match="id[@type='doi']">
+    <id type="doi" advice="update">
+      <xsl:value-of select="text()"/>
+    </id>
   </xsl:template>
 
   <xsl:template match="title">
@@ -245,16 +268,74 @@
   </xsl:template>
 
   <xsl:template match="galley">
-    <xsl:apply-templates select="file" />
+    <xsl:apply-templates select="file" >
+    </xsl:apply-templates>
+  </xsl:template>
+  
+  <xsl:template match="supplemental_file">
+      <xsl:apply-templates select="file" >
+        <xsl:with-param name="genre" select="@type"/>
+      </xsl:apply-templates>
+    
   </xsl:template>
 
   <xsl:template match="file">
-    <submission_file stage="proof" id="{format-number(count(preceding::file)+1,'0')}" file_id="{position()}" genre="Article Text">      
-      <name locale="{ancestor::galley/@locale}"><xsl:value-of select="embed/@filename" /></name>
+    <xsl:param name="genre">Article Text</xsl:param>
+    <submission_file stage="proof" id="{format-number(count(preceding::file)+1,'0')}" file_id="{position()}">  
+      <xsl:attribute name="genre">
+        <xsl:value-of select="concat(translate(substring($genre, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring($genre, 2))"/>
+      </xsl:attribute>
+<!--      <xsl:apply-templates select="parent::node()/title"/>-->
+      <xsl:apply-templates select="parent::node()/creator"/>
+      <xsl:apply-templates select="parent::node()/description"/>
+      <xsl:apply-templates select="parent::node()/publisher"/>
+      <xsl:apply-templates select="parent::node()/sponsor"/>
+      <xsl:apply-templates select="parent::node()/subject"/>
+      
+      <xsl:variable name="locale" >
+        <xsl:if test="ancestor::galley/@locale">
+          <xsl:value-of select="ancestor::galley/@locale"/>
+        </xsl:if>
+        <xsl:if test="not(ancestor::galley/@locale)">en_US</xsl:if>
+      </xsl:variable>
+      
+      <name locale="{$locale}">
+        <xsl:value-of select="embed/@filename" />
+      </name>
       <file id="{position()}">
         <xsl:apply-templates select="embed | href" />
       </file>
     </submission_file>
+  </xsl:template>
+  
+  <xsl:template match="creator">
+    <creator locale="{@locale}">
+      <xsl:value-of select="text()"/>
+    </creator>
+  </xsl:template>
+  
+  <xsl:template match="description">
+    <description locale="{@locale}">
+      <xsl:value-of select="text()"/>
+    </description>
+  </xsl:template>
+  
+  <xsl:template match="publisher">
+    <publisher locale="{@locale}">
+      <xsl:value-of select="text()"/>
+    </publisher>
+  </xsl:template>
+  
+  <xsl:template match="sponsor">
+    <sponsor locale="{@locale}">
+      <xsl:value-of select="text()"/>
+    </sponsor>
+  </xsl:template>
+  
+  <xsl:template match="subject">
+    <subject locale="{@locale}">
+      <xsl:value-of select="text()"/>
+    </subject>
   </xsl:template>
 
   <xsl:template match="embed">
