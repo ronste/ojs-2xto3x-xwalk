@@ -37,7 +37,10 @@
         </xsl:choose>
       </xsl:attribute>
       <issue_identification>
-        <xsl:apply-templates select="volume | number | year | title" mode="copy"/>
+        <xsl:apply-templates select="volume" mode="copy"/>
+        <xsl:apply-templates select="number" mode="copy"/>
+        <xsl:apply-templates select="year" mode="copy"/>
+        <xsl:apply-templates select="title" mode="copy"/>
       </issue_identification>
       <xsl:apply-templates select="date_published" mode="copy"/>
       <sections>
