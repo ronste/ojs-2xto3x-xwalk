@@ -288,10 +288,7 @@
 <!--      <xsl:apply-templates select="parent::node()/title"/>-->
       <xsl:apply-templates select="parent::node()/creator"/>
       <xsl:apply-templates select="parent::node()/description"/>
-      <xsl:apply-templates select="parent::node()/publisher"/>
-      <xsl:apply-templates select="parent::node()/sponsor"/>
-      <xsl:apply-templates select="parent::node()/subject"/>
-      
+
       <xsl:variable name="locale" >
         <xsl:if test="ancestor::galley/@locale">
           <xsl:value-of select="ancestor::galley/@locale"/>
@@ -302,6 +299,10 @@
       <name locale="{$locale}">
         <xsl:value-of select="embed/@filename" />
       </name>
+
+      <xsl:apply-templates select="parent::node()/publisher"/>
+      <xsl:apply-templates select="parent::node()/sponsor"/>
+      <xsl:apply-templates select="parent::node()/subject"/>
       <file id="{position()}">
         <xsl:apply-templates select="embed | href" />
       </file>
