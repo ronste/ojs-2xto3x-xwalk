@@ -142,7 +142,9 @@
             <name locale="{@locale}">
               <xsl:value-of select="label/text()"/>
             </name>
-            <seq>0</seq>
+            <seq>
+              <xsl:value-of select="format-number(count(./parent::node()/preceding::article)+1,'0')" />
+            </seq>
             <submission_file_ref id="{format-number(count(preceding::file)+1,'0')}"/>
           </article_galley>
         </xsl:for-each>
@@ -152,7 +154,9 @@
             <name locale="en_US">
               <xsl:value-of select="'Supplementary'"/>
             </name>
-            <seq>0</seq>
+            <seq>
+              <xsl:value-of select="format-number(count(preceding::supplemental_file)+1,'0')" />
+            </seq>
             <submission_file_ref id="{format-number(count(preceding::file)+1,'0')}"/>
           </article_galley>
         </xsl:for-each>
