@@ -95,7 +95,7 @@
       </xsl:if>
       <xsl:apply-templates select="galley"/>
       <xsl:apply-templates select="supplemental_file"/>
-      <publication status="3" access_status="0" >
+      <publication status="3" access_status="0" seq="{format-number(count(./parent::node()/preceding::article)+1,'0')}">
         <xsl:choose>
           <xsl:when test="string-length(date_published)">
             <xsl:attribute name="date_published">
@@ -192,7 +192,7 @@
   </xsl:template>
 
   <xsl:template match="author">
-    <author id="1" seq="{position()}" user_group_ref="Author">
+    <author id="{position()}" seq="{position()}" user_group_ref="Author">
       <xsl:copy-of select="@*" />
       <xsl:if test="string-length(firstname)">
         <givenname>
@@ -288,7 +288,7 @@
 
   <xsl:template match="file">
     <xsl:param name="genre">Article Text</xsl:param>
-    <submission_file stage="proof" id="{format-number(count(preceding::file)+1,'0')}" file_id="{position()}">  
+    <submission_file stage="proof" id="{format-number(count(preceding::file)+1,'0')}" file_id="{format-number(count(preceding::file)+1,'0')}">  
       <xsl:attribute name="genre">
         <xsl:value-of select="concat(translate(substring($genre, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring($genre, 2))"/>
       </xsl:attribute>
@@ -310,7 +310,7 @@
       <xsl:apply-templates select="parent::node()/publisher"/>
       <xsl:apply-templates select="parent::node()/sponsor"/>
       <xsl:apply-templates select="parent::node()/subject"/>
-      <file id="{position()}">
+      <file id="{format-number(count(preceding::file)+1,'0')}">
         <xsl:apply-templates select="embed | href" />
       </file>
     </submission_file>
