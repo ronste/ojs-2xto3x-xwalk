@@ -36,6 +36,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:attribute>
+      <xsl:apply-templates select="id[@type='doi']"/>
       <issue_identification>
         <xsl:apply-templates select="volume" mode="copy"/>
         <xsl:apply-templates select="number" mode="copy"/>
